@@ -19,6 +19,7 @@ import Loader from "@/components/loader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { getDefaultDateRange } from "@/helpers/date-utils";
+import { decryptProjectId } from "@/utils/crypto";
 
 export default function PublicProjectPage() {
     const { projectId: encryptedId } = useParams<{ projectId: string }>();
@@ -71,27 +72,54 @@ export default function PublicProjectPage() {
         }
     }, [projectId]);
 
-    // Decrypt the project ID via the backend
+    // Decrypt the project ID client-side. The encrypted token is computed
+    // with the same key in `ShareProjectButton`, so decryption is purely
+    // local — no backend round-trip required.
     useEffect(() => {
         const decrypt = async () => {
+            if (!encryptedId) return;
             try {
-                setIsLoading(true);
-                const result = await fetchApi(
-                    `/projects/public/${encryptedId}`,
-                    ProjectSchema,
-                );
-                setProjectId(result.id);
-                setProject(result);
-            } catch {
+                const decryptedId = await decryptProjectId(encryptedId);
+                setProjectId(decryptedId);
+            } catch (err) {
+                console.error("Failed to decrypt project ID:", err);
                 setError(
                     "Invalid project link or the project no longer exists.",
                 );
-            } finally {
                 setIsLoading(false);
             }
         };
         decrypt();
     }, [encryptedId]);
+
+    // Once we have the real project id, fetch the project. The backend
+    // already serves public projects through the regular endpoint without
+    // authentication.
+    useEffect(() => {
+        const fetchProjectData = async () => {
+            if (!projectId || project) return;
+            try {
+                setIsLoading(true);
+                const projectData = await fetchApi(
+                    `/projects/${projectId}`,
+                    ProjectSchema,
+                );
+                if (!projectData.public) {
+                    setError(
+                        "This project is not available for public viewing.",
+                    );
+                    return;
+                }
+                setProject(projectData);
+            } catch (err) {
+                console.error("Error fetching project:", err);
+                setError("Failed to load project data.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProjectData();
+    }, [projectId, project]);
 
     useEffect(() => {
         if (projectId && project) {

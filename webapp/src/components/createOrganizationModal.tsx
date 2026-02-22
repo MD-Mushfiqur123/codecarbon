@@ -91,7 +91,7 @@ const CreateOrganizationModal: React.FC<ModalProps> = ({
                         <Label htmlFor="org-name">Organization Name</Label>
                         <Input
                             id="org-name"
-                            type="text"
+                            id="org-name"type="text"
                             value={formData.name}
                             onChange={(e) =>
                                 setFormData({
@@ -102,6 +102,11 @@ const CreateOrganizationModal: React.FC<ModalProps> = ({
                             placeholder="Organization Name"
                         />
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="org-description">
+                            Organization Description
+                        </Label>
+                        </div>
                     <div className="space-y-2">
                         <Label htmlFor="org-description">
                             Organization Description

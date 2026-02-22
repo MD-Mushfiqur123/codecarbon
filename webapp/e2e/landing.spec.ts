@@ -10,6 +10,12 @@ test.describe("Landing page (mock mode)", () => {
             page.getByRole("heading", { name: /welcome to code carbon/i }),
         ).toBeVisible();
 
+        await expect(
+            page.getByRole("link", {
+                name: /sign in or create an account/i,
+            }),
+        ).toBeVisible();
+
         // In mock mode the real-login button is hidden — there is no real
         // OAuth backend in this build.
         await expect(page.getByTestId("real-login")).toHaveCount(0);

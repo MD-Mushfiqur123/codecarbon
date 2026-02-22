@@ -87,7 +87,7 @@ const CreateProjectModal: React.FC<ModalProps> = ({
                         <Label htmlFor="project-name">Project Name</Label>
                         <Input
                             id="project-name"
-                            type="text"
+                            id="project-name"type="text"
                             value={formData.name}
                             onChange={(e) =>
                                 setFormData({
@@ -98,6 +98,11 @@ const CreateProjectModal: React.FC<ModalProps> = ({
                             placeholder="Project Name"
                         />
                     </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="project-description">
+                            Project Description
+                        </Label>
+                        </div>
                     <div className="space-y-2">
                         <Label htmlFor="project-description">
                             Project Description
