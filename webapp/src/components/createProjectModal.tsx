@@ -87,7 +87,7 @@ const CreateProjectModal: React.FC<ModalProps> = ({
                         <Label htmlFor="project-name">Project Name</Label>
                         <Input
                             id="project-name"
-                            id="project-name"type="text"
+                            type="text"
                             value={formData.name}
                             onChange={(e) =>
                                 setFormData({

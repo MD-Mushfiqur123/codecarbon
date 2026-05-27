@@ -31,14 +31,7 @@ export async function getExperiments(projectId: string): Promise<Experiment[]> {
             (e) => typeof e.id === "string" && e.id.length > 0,
         );
     } catch (error) {
-        console.error("[getExperiments] failed", error);return result.map((experiment) => ({
-            id: experiment.id,
-            name: experiment.name,
-            description: experiment.description,
-            project_id: experiment.project_id,
-            timestamp: experiment.timestamp,
-        }));
-    } catch {
+        console.error("[getExperiments] failed", error);
         return [];
     }
 }

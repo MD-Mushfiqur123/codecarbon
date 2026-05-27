@@ -91,7 +91,7 @@ const CreateOrganizationModal: React.FC<ModalProps> = ({
                         <Label htmlFor="org-name">Organization Name</Label>
                         <Input
                             id="org-name"
-                            id="org-name"type="text"
+                            type="text"
                             value={formData.name}
                             onChange={(e) =>
                                 setFormData({

@@ -29,8 +29,23 @@ describe("resolveMock — organizations", () => {
         expect((r.body as { id: string }).id).toBe(ID.org);
     });
 
+    it("returns 404 for an unknown organization", () => {
+        const r = resolveMock(url("/organizations/does-not-exist"), "GET");
         expect(r.status).toBe(404);
-        );
+    });
+
+    it("returns users for the mock organization", () => {
+        const r = resolveMock(url(`/organizations/${ID.org}/users`), "GET");
+        expect(r.status).toBe(200);
+        const users = r.body as Array<{ id: string }>;
+        expect(users.map((u) => u.id)).toContain(ID.users.admin);
+        expect(users.map((u) => u.id)).toContain(ID.users.member);
+    });
+
+    it("returns the org sums report", () => {
+        const r = resolveMock(url(`/organizations/${ID.org}/sums`), "GET");
+        expect(r.status).toBe(200);
+        expect((r.body as { name: string }).name).toBe("Mock Organization");
     });
 
     it("synthesizes an added user on POST /add-user", () => {
