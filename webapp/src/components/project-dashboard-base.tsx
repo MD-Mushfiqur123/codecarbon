@@ -14,8 +14,20 @@ import ChartSkeleton from "./chart-skeleton";
 import CreateExperimentModal from "./createExperimentModal";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
-import { Table, TableBody, TableHeader } from "./ui/table";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
+
+// Sentinel value for the "show data from every experiment" option in the
+// experiment dropdown. Radix Select forbids an empty string as an item value.
+const ALL_EXPERIMENTS = "__all__";
 
 const RadialChart = lazy(() => import("@/components/radial-chart"));
 const ExperimentsBarChart = lazy(
@@ -80,6 +92,23 @@ export default function ProjectDashboardBase({
     const experimentName = experimentsReportData.find(
         (experiment) => experiment.experiment_id === selectedExperimentId,
     )?.name;
+
+    const selectedExperiment = projectExperiments.find(
+        (e) => e.id === selectedExperimentId,
+    );
+
+    const handleSelectExperiment = (value: string) => {
+        onExperimentClick(value === ALL_EXPERIMENTS ? "" : value);
+    };
+
+    const handleCopyExperimentId = async (id: string) => {
+        try {
+            await navigator.clipboard.writeText(id);
+            toast.success("Experiment id copied");
+        } catch {
+            toast.error("Failed to copy");
+        }
+    };
 
     return (
         <div className="flex flex-col gap-4">
@@ -266,46 +295,68 @@ export default function ProjectDashboardBase({
                     )}
                 </div>
                 {projectExperiments.length !== 0 && (
-                    <Card className="flex flex-col md:flex-row justify-between md:items-center gap-4 py-4 px-4 w-full max-w-3/4">
-                        <Table>
-                            <TableHeader>
-                                <tr>
-                                    <th className="text-left">Experiment</th>
-                                    <th className="text-left">Description</th>
-                                    {!isPublicView && (
-                                        <th className="text-left">
+                    <div className="flex flex-col gap-3 w-full md:w-2/3">
+                        <Select
+                            value={selectedExperimentId || ALL_EXPERIMENTS}
+                            onValueChange={handleSelectExperiment}
+                        >
+                            <SelectTrigger
+                                data-testid="experiment-select"
+                                aria-label="Select an experiment"
+                            >
+                                <SelectValue placeholder="Select an experiment" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value={ALL_EXPERIMENTS}>
+                                    All experiments
+                                </SelectItem>
+                                {projectExperiments.map((experiment) => (
+                                    <SelectItem
+                                        key={experiment.id}
+                                        value={experiment.id}
+                                        data-testid={`experiment-option-${experiment.id}`}
+                                    >
+                                        {experiment.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {selectedExperiment && (
+                            <Card
+                                className="p-4 flex flex-col gap-2"
+                                data-testid="experiment-details"
+                            >
+                                {selectedExperiment.description && (
+                                    <p className="text-sm text-muted-foreground">
+                                        {selectedExperiment.description}
+                                    </p>
+                                )}
+                                {!isPublicView && (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs font-medium text-muted-foreground">
                                             Experiment id
-                                        </th>
-                                    )}
-                                </tr>
-                            </TableHeader>
-                            <TableBody>
-                                {projectExperiments
-                                    .filter((e) => !!e.id)
-                                    .map((experiment) => (
-                                        <tr
-                                            key={experiment.id}
-                                            data-testid={`experiment-row-${experiment.id}`}
-                                            className={`cursor-pointer hover:bg-muted/50 ${
-                                                experiment.id ===
-                                                selectedExperimentId
-                                                    ? "bg-primary/10"
-                                                    : ""
-                                            }`}
+                                        </span>
+                                        <code className="text-xs bg-muted px-2 py-1 rounded font-mono break-all">
+                                            {selectedExperiment.id}
+                                        </code>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-7 w-7"
+                                            aria-label="Copy experiment id"
                                             onClick={() =>
-                                                onExperimentClick(experiment.id)
+                                                handleCopyExperimentId(
+                                                    selectedExperiment.id,
+                                                )
                                             }
                                         >
-                                            <td>{experiment.name}</td>
-                                            <td>{experiment.description}</td>
-                                            {!isPublicView && (
-                                                <td>{experiment.id}</td>
-                                            )}
-                                        </tr>
-                                    ))}
-                            </TableBody>
-                        </Table>
-                    </Card>
+                                            <Copy className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                )}
+                            </Card>
+                        )}
+                    </div>
                 )}
             </Card>
             <div className="grid gap-8 md:grid-cols-2">

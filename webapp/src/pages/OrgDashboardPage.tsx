@@ -155,7 +155,7 @@ export default function OrgDashboardPage() {
                             <p className="text-sm font-medium">
                                 Of watching TV
                             </p>
-              <p className="text-sm font-medium">
+                            <p className="text-sm font-medium">
                                 Of watching TV
                             </p>
                         </div>

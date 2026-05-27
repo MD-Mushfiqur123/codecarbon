@@ -102,7 +102,7 @@ const CreateProjectModal: React.FC<ModalProps> = ({
                         <Label htmlFor="project-description">
                             Project Description
                         </Label>
-                        </div>
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="project-description">
                             Project Description

@@ -106,7 +106,7 @@ const CreateOrganizationModal: React.FC<ModalProps> = ({
                         <Label htmlFor="org-description">
                             Organization Description
                         </Label>
-                        </div>
+                    </div>
                     <div className="space-y-2">
                         <Label htmlFor="org-description">
                             Organization Description
